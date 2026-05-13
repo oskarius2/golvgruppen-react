@@ -716,9 +716,9 @@ const CSS = `
       height:auto;
       min-height:min(88dvh, 580px);
       padding:1.25rem 0 5.25rem;
-      align-items:flex-start;
+      align-items:flex-end;
     }
-    .hcon{padding:0 1.15rem;transform:none}
+    .hcon{padding:0 1.15rem .4rem}
     .hbadge{font-size:.58rem;padding:.32rem .72rem;margin-bottom:1rem;letter-spacing:.12em;max-width:100%;flex-wrap:wrap}
     .hero h1{
       font-size:clamp(1.85rem,7vw,2.65rem);
@@ -732,7 +732,7 @@ const CSS = `
       padding-left:.65rem;
       margin-bottom:1.35rem;
     }
-    .hbtns{margin-bottom:1.75rem;flex-direction:column;width:100%}
+    .hbtns{margin-bottom:1rem;flex-direction:column;width:100%}
     .hbtns .btn{width:100%;justify-content:center;min-height:46px}
     .hmask{
       width:min(640px,100vw);
