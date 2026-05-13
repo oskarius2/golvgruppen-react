@@ -321,7 +321,7 @@ const CSS = `
 
   /* ── HERO ── */
   .hero{position:relative;height:calc(100vh - var(--ticker-h) - var(--nav-h));
-    min-height:560px;display:flex;align-items:center;overflow:hidden;
+    min-height:560px;display:flex;align-items:flex-end;overflow:hidden;
     background:url('${HERO_POSTER}') center center / cover no-repeat #080F24}
   .hvid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 36%;
     filter:brightness(.62) contrast(.86) saturate(.82);pointer-events:none;transform:translateZ(0);backface-visibility:hidden}
@@ -338,7 +338,7 @@ const CSS = `
     width:min(980px,96vw);height:50%;
     background:radial-gradient(ellipse at 50% 100%, rgba(4,7,13,.98) 0%, rgba(4,7,13,.8) 38%, rgba(4,7,13,.32) 68%, rgba(4,7,13,0) 100%);
     filter:blur(8px);z-index:1;pointer-events:none}
-  .hcon{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:0 2rem;width:100%}
+  .hcon{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:0 2rem 7.25rem;width:100%}
   .hbadge{display:inline-flex;align-items:center;gap:.5rem;
     background:rgba(26,86,219,.18);border:1px solid rgba(59,130,246,.28);
     backdrop-filter:blur(8px);color:#93C5FD;padding:.38rem .9rem;border-radius:3px;
