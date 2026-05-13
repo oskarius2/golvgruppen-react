@@ -354,8 +354,10 @@ const CSS = `
     background:rgba(4,7,13,.82);backdrop-filter:blur(10px);
     border-top:1px solid rgba(255,255,255,.06)}
   .hcerts-in{max-width:1200px;margin:0 auto;padding:.8rem 2rem;
-    display:flex;gap:2rem;overflow-x:auto;scrollbar-width:none}
-  .hcerts-in::-webkit-scrollbar{display:none}
+    overflow:hidden}
+  .hcerts-track{display:flex;gap:2rem;width:max-content;animation:hcertsTicker 54s linear infinite}
+  .hcerts-in:hover .hcerts-track{animation-play-state:paused}
+  @keyframes hcertsTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
   .hci{display:flex;align-items:center;gap:.45rem;flex-shrink:0}
   .hci-code{font-size:.62rem;font-weight:800;letter-spacing:.1em;color:#fff;
     background:rgba(26,86,219,.4);padding:.18rem .48rem;border-radius:3px}
@@ -784,6 +786,7 @@ const CSS = `
 
   @media(prefers-reduced-motion:reduce){
     .ticker-track{animation:none}
+    .hcerts-track{animation:none}
     .page-enter{animation:none}
     .hvid{display:none}
   }
@@ -1244,12 +1247,14 @@ function HomePage({ navigate }) {
         </div>
         <div className="hcerts-bar">
           <div className="hcerts-in">
-            {CERTS.map((c,i)=>(
-              <div key={i} className="hci">
-                <span className="hci-code">{c.code}</span>
-                <span className="hci-name">{c.full}</span>
-              </div>
-            ))}
+            <div className="hcerts-track">
+              {[...CERTS, ...CERTS].map((c, i) => (
+                <div key={`${c.code}-${i}`} className="hci" aria-hidden={i >= CERTS.length}>
+                  <span className="hci-code">{c.code}</span>
+                  <span className="hci-name">{c.full}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
