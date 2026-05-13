@@ -375,11 +375,13 @@ const CSS = `
   .sl{font-size:.62rem;font-weight:600;color:rgba(255,255,255,.32);margin-top:.28rem;
     letter-spacing:.1em;text-transform:uppercase}
   .sbar + .sec{padding-top:4.25rem}
-  .home-rest{animation:homeReveal .72s cubic-bezier(.22,1,.36,1) both}
-  @keyframes homeReveal{
-    from{opacity:0;transform:translateY(18px);filter:blur(4px)}
-    to{opacity:1;transform:translateY(0);filter:blur(0)}
+  .home-rest{
+    opacity:0;transform:translateY(14px);filter:blur(3px);
+    transition:opacity .62s cubic-bezier(.22,1,.36,1),transform .62s cubic-bezier(.22,1,.36,1),filter .62s ease;
+    will-change:opacity,transform,filter
   }
+  .home-rest.ready{opacity:1;transform:translateY(0);filter:blur(0)}
+  .home-rest.pending{pointer-events:none;user-select:none}
   @media(max-width:720px){.sgrid{grid-template-columns:repeat(3,1fr)}}
   @media(max-width:480px){.sgrid{grid-template-columns:repeat(2,1fr)}}
 
@@ -795,7 +797,7 @@ const CSS = `
     .ticker-track{animation:none}
     .hcerts-track{animation:none}
     .page-enter{animation:none}
-    .home-rest{animation:none}
+    .home-rest{transition:none;opacity:1;transform:none;filter:none}
     .hvid{display:none}
   }
 `;
@@ -1267,8 +1269,8 @@ function HomePage({ navigate }) {
   const handleHeroReady = useCallback(() => setHeroReady(true), []);
 
   useEffect(() => {
-    // Fallback: never block the page forever if media events fail.
-    const t = window.setTimeout(() => setHeroReady(true), 3200);
+    // Keep reveal snappy even if media events are delayed.
+    const t = window.setTimeout(() => setHeroReady(true), 1700);
     return () => window.clearTimeout(t);
   }, []);
 
@@ -1300,8 +1302,7 @@ function HomePage({ navigate }) {
         </div>
       </section>
 
-      {heroReady ? (
-        <div className="home-rest">
+      <div className={`home-rest ${heroReady ? "ready" : "pending"}`}>
           <div className="sbar">
             <div className="w">
               <div className="sgrid">
@@ -1369,8 +1370,7 @@ function HomePage({ navigate }) {
               <button className="btn bw" onClick={()=>navigate("kontakt")}>Kontakta oss <ArrowRight size={15}/></button>
             </div>
           </div>
-        </div>
-      ) : null}
+      </div>
     </div>
   );
 }
