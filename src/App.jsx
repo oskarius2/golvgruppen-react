@@ -730,7 +730,7 @@ const CSS = `
     .team-list{grid-template-columns:1fr;gap:1.25rem}
 
   @media(max-width:400px){
-    .sgrid{grid-template-columns:1fr;border-left:none}
+    .sgrid{grid-template-columns:repeat(2,1fr);border-left:none}
     .stat{border-right:none;border-bottom:1px solid rgba(255,255,255,.05)}
     .stat:last-child{border-bottom:none}
   }
