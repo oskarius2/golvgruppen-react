@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="GolvGruppen förhandsbild">
+  <defs>
+    <linearGradient id="bg" x1="140" y1="80" x2="1020" y2="580" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#080F24" />
+      <stop offset="1" stop-color="#132A57" />
+    </linearGradient>
+    <linearGradient id="line" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#60A5FA" stop-opacity="0.35" />
+      <stop offset="1" stop-color="#DBEAFE" stop-opacity="0.15" />
+    </linearGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="170" y2="130" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#93C5FD" />
+      <stop offset="1" stop-color="#EFF6FF" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect x="72" y="72" width="1056" height="486" rx="28" fill="none" stroke="url(#line)" stroke-width="2" />
+  <path d="M80 530L360 280 505 420 735 225 1120 490" fill="none" stroke="url(#line)" stroke-width="3" />
+
+  <g transform="translate(130 140)">
+    <rect x="0" y="0" width="170" height="130" rx="24" fill="#0D1B3E" />
+    <path
+      d="M35 28h46v20h-22v19h18v19h-18v16H35V28zm78 37c0 20-12 37-35 37h-8V84h8c8 0 12-7 12-19s-4-19-12-19h-8V28h8c23 0 35 17 35 37z"
+      fill="url(#mark)"
+    />
+  </g>
+
+  <text x="330" y="212" fill="#DBEAFE" font-size="72" font-family="Inter, Arial, sans-serif" font-weight="700" letter-spacing="1">
+    GolvGruppen
+  </text>
+  <text x="330" y="286" fill="#93C5FD" font-size="36" font-family="Inter, Arial, sans-serif" font-weight="500">
+    Golv &amp; plattsättning i Örebro
+  </text>
+  <text x="130" y="382" fill="#E2E8F0" font-size="34" font-family="Inter, Arial, sans-serif" font-weight="500">
+    Certifierad kvalitet för privat, kommersiellt och offentlig sektor.
+  </text>
+  <text x="130" y="442" fill="#CBD5E1" font-size="30" font-family="Inter, Arial, sans-serif">
+    Badrum · Trägolv · Mattläggning · Plattsättning · Golvavjämning
+  </text>
+</svg>
