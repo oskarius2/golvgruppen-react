@@ -11,9 +11,87 @@
     />
     <meta name="theme-color" content="#080F24" />
     <meta name="robots" content="index,follow" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://images.unsplash.com" />
+    <link
+      rel="preload"
+      as="image"
+      fetchpriority="high"
+      href="/hero-poster.png"
+    />
+
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap"
+      />
+    </noscript>
+
+    <style>
+      *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+      :root{
+        --black:#04070D;--navy:#080F24;--navy2:#0D1B3E;
+        --blue:#132a57;--blue-lt:#2f4f8f;
+        --sky:#EFF6FF;--white:#fff;
+        --g1:#F8FAFC;--g2:#F1F5F9;--g3:#CBD5E1;--g4:#94A3B8;--g5:#64748B;--g6:#334155;
+        --serif:'DM Serif Display',Georgia,serif;--sans:'Inter',system-ui,sans-serif;
+        --r:8px;--ticker-h:36px;--nav-h:66px;
+      }
+      html{font-size:16px}
+      body{font-family:var(--sans);background:var(--white);color:var(--g6);line-height:1.65;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+      img{display:block;width:100%;object-fit:cover}
+      button{font-family:var(--sans);-webkit-tap-highlight-color:transparent}
+      .w{max-width:1200px;margin:0 auto;padding:0 2rem}
+      .ticker-wrap{background:var(--navy);height:var(--ticker-h);overflow:hidden;display:flex;align-items:center;border-bottom:1px solid rgba(255,255,255,.06)}
+      .ticker-track{display:flex;animation:ticker 35s linear infinite;width:max-content}
+      .ticker-item{display:inline-flex;align-items:center;gap:.55rem;padding:0 2rem;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:rgba(255,255,255,.4);white-space:nowrap;font-family:var(--serif)}
+      .ticker-dot{width:3px;height:3px;border-radius:50%;background:var(--blue-lt);flex-shrink:0}
+      @keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+      .nav{position:sticky;top:0;z-index:200;height:var(--nav-h);background:rgba(4,7,13,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.07)}
+      .nav-in{max-width:1200px;margin:0 auto;padding:0 2rem;height:100%;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+      .logo-btn{font-family:var(--serif);font-size:1.3rem;font-weight:400;color:#fff;background:none;border:none;cursor:pointer;padding:0;letter-spacing:.01em;flex-shrink:0}
+      .logo-blue{color:#93C5FD}
+      .nl{display:flex;align-items:center;gap:.1rem;flex:1;justify-content:center}
+      .nl-btn{font-size:.82rem;font-weight:500;color:rgba(255,255,255,.72);background:none;border:none;padding:.45rem .75rem;border-radius:5px;cursor:pointer;white-space:nowrap}
+      .nav-right{display:flex;align-items:center;gap:.6rem;flex-shrink:0}
+      .nav-cta{background:linear-gradient(135deg,#10224a 0%,var(--navy2) 55%,#1e3f81 100%);color:#fff;border:1px solid rgba(147,197,253,.2);padding:.52rem 1.12rem;border-radius:calc(var(--r) + 1px);font-size:.8rem;font-weight:600;cursor:pointer;white-space:nowrap}
+      .nmb{background:none;border:none;color:#fff;cursor:pointer;display:none;padding:.25rem}
+      @media(max-width:960px){.nl{display:none}.nav-cta{display:none}.nmb{display:flex}}
+      .hero{position:relative;height:calc(100vh - var(--ticker-h) - var(--nav-h));min-height:560px;display:flex;align-items:flex-end;overflow:hidden;background:url('/hero-poster.png') center center / cover no-repeat #080F24}
+      .hov{position:absolute;inset:0;background:linear-gradient(to top,rgba(4,7,13,.96) 0%,rgba(4,7,13,.86) 22%,rgba(4,7,13,.58) 44%,rgba(4,7,13,.24) 66%,rgba(4,7,13,0) 88%)}
+      .hcon{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:0 2rem 1.2rem;width:100%;transform:translateY(3.9rem)}
+      .hbadge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(26,86,219,.18);border:1px solid rgba(59,130,246,.28);color:#93C5FD;padding:.38rem .9rem;border-radius:3px;font-size:.67rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:1.4rem}
+      .hbadge-dot{width:5px;height:5px;background:var(--blue-lt);border-radius:50%}
+      .hero h1{font-family:var(--serif);font-size:clamp(2.4rem,5vw,4.2rem);font-weight:400;line-height:1.08;color:#fff;max-width:760px;margin-bottom:1.1rem}
+      .hero h1 em{font-style:italic;color:#93C5FD}
+      .hero-sub{font-size:.9rem;color:rgba(255,255,255,.55);max-width:460px;line-height:1.8;margin-bottom:2rem;padding-left:.9rem;border-left:2px solid rgba(59,130,246,.35)}
+      .hbtns{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.35rem}
+      .btn{display:inline-flex;align-items:center;gap:.45rem;font-family:var(--sans);font-size:.82rem;font-weight:650;padding:.74rem 1.5rem;border-radius:calc(var(--r) + 1px);border:1px solid transparent;cursor:pointer;letter-spacing:.01em;white-space:nowrap;text-decoration:none}
+      .bp{background:linear-gradient(135deg,#10224a 0%,var(--navy2) 55%,#1f4389 100%);color:#fff;border-color:rgba(147,197,253,.22);box-shadow:0 10px 24px rgba(8,15,36,.24),inset 0 1px 0 rgba(255,255,255,.15)}
+      @media(max-width:640px){
+        html{font-size:15px}
+        .nav-in{padding:0 1.15rem}
+        .logo-btn{font-size:1.12rem}
+        .hero{height:auto;min-height:min(88dvh,580px);padding:1.25rem 0 5.25rem}
+        .hcon{padding:0 1.15rem .9rem;transform:translateY(1.8rem)}
+        .hero h1{font-size:clamp(1.85rem,7vw,2.65rem);max-width:none;margin-bottom:.85rem}
+        .hero-sub{max-width:none;font-size:.86rem;line-height:1.75;padding-left:.65rem;margin-bottom:1.35rem}
+        .hbtns{margin-bottom:1.2rem;flex-direction:column;width:100%}
+        .hbtns .btn{width:100%;justify-content:center;min-height:46px}
+      }
+    </style>
 
     <link rel="icon" type="image/svg+xml" href="/favicon-v2.svg" />
     <link rel="shortcut icon" href="/favicon-v2.svg" />
@@ -31,11 +109,9 @@
     <meta property="og:url" content="https://ggruppen.se/" />
     <meta
       property="og:image"
-      content="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&amp;fit=crop&amp;w=1200&amp;h=630&amp;q=80"
+      content="https://ggruppen.se/hero-poster.png"
     />
-    <meta property="og:image:type" content="image/jpeg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:alt" content="GolvGruppen — Golv & plattsättning i Örebro" />
 
     <meta name="twitter:card" content="summary_large_image" />
@@ -46,7 +122,7 @@
     />
     <meta
       name="twitter:image"
-      content="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&amp;fit=crop&amp;w=1200&amp;h=630&amp;q=80"
+      content="https://ggruppen.se/hero-poster.png"
     />
   </head>
   <body>
