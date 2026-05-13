@@ -109,6 +109,25 @@ const TEAM_MEMBERS = [
   { name: "Förnamn Efternamn", title: "Titel / roll", tel: "073-309 16 95", email: "namn5@ggruppen.se", img: "" },
 ];
 
+/** Keeps first occurrence per `id`, else per title+img — avoids duplicate cards on /projekt. */
+function dedupeProjects(projects) {
+  if (!Array.isArray(projects)) return [];
+  const seen = new Set();
+  const out = [];
+  for (const p of projects) {
+    if (!p || typeof p !== "object") continue;
+    const id = p.id;
+    const key =
+      id != null && String(id).trim() !== ""
+        ? `id:${String(id)}`
+        : `k:${String(p.title ?? "").trim()}|${String(p.img ?? "").trim()}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(p);
+  }
+  return out;
+}
+
 /* ══════════════════════════════════════════════════════
    STORAGE HELPERS
 ══════════════════════════════════════════════════════ */
@@ -140,12 +159,21 @@ async function markRead(id) {
   } catch {}
 }
 async function loadProjects() {
-  try { const r = await window.storage.get("gg-projects"); return r ? JSON.parse(r.value) : DEFAULT_PROJECTS; }
-  catch { return DEFAULT_PROJECTS; }
+  try {
+    const r = await window.storage.get("gg-projects");
+    if (!r?.value) return dedupeProjects(DEFAULT_PROJECTS);
+    const parsed = JSON.parse(r.value);
+    if (!Array.isArray(parsed)) return dedupeProjects(DEFAULT_PROJECTS);
+    return dedupeProjects(parsed);
+  } catch {
+    return dedupeProjects(DEFAULT_PROJECTS);
+  }
 }
 async function saveProjects(projects) {
-  try { await window.storage.set("gg-projects", JSON.stringify(projects)); return true; }
-  catch { return false; }
+  try {
+    await window.storage.set("gg-projects", JSON.stringify(dedupeProjects(projects)));
+    return true;
+  } catch { return false; }
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1383,7 +1411,7 @@ function TjansterPage({ navigate }) {
 }
 
 function ProjectsPage({ navigate }) {
-  const [projects, setProjects] = useState(DEFAULT_PROJECTS);
+  const [projects, setProjects] = useState(() => dedupeProjects(DEFAULT_PROJECTS));
   const [filter, setFilter] = useState("Alla");
   useEffect(() => { loadProjects().then(setProjects); }, []);
   const tags = ["Alla", ...new Set(projects.map(p => p.tag))];
