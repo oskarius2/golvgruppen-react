@@ -338,8 +338,8 @@ const CSS = `
     width:min(980px,96vw);height:50%;
     background:radial-gradient(ellipse at 50% 100%, rgba(4,7,13,.98) 0%, rgba(4,7,13,.8) 38%, rgba(4,7,13,.32) 68%, rgba(4,7,13,0) 100%);
     filter:blur(8px);z-index:1;pointer-events:none}
-  .hcon{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:0 2rem .4rem;width:100%;
-    transform:translateY(4.8rem)}
+  .hcon{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:0 2rem 1.2rem;width:100%;
+    transform:translateY(3.9rem)}
   .hbadge{display:inline-flex;align-items:center;gap:.5rem;
     background:rgba(26,86,219,.18);border:1px solid rgba(59,130,246,.28);
     backdrop-filter:blur(8px);color:#93C5FD;padding:.38rem .9rem;border-radius:3px;
@@ -350,7 +350,7 @@ const CSS = `
   .hero h1 em{font-style:italic;color:#93C5FD}
   .hero-sub{font-size:.9rem;color:rgba(255,255,255,.55);max-width:460px;line-height:1.8;
     margin-bottom:2rem;padding-left:.9rem;border-left:2px solid rgba(59,130,246,.35)}
-  .hbtns{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem}
+  .hbtns{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.35rem}
   .hcerts-bar{position:absolute;bottom:0;left:0;right:0;z-index:2;
     background:rgba(4,7,13,.82);backdrop-filter:blur(10px);
     border-top:1px solid rgba(255,255,255,.06)}
@@ -718,7 +718,7 @@ const CSS = `
       padding:1.25rem 0 5.25rem;
       align-items:flex-end;
     }
-    .hcon{padding:0 1.15rem .4rem}
+    .hcon{padding:0 1.15rem .9rem;transform:translateY(1.8rem)}
     .hbadge{font-size:.58rem;padding:.32rem .72rem;margin-bottom:1rem;letter-spacing:.12em;max-width:100%;flex-wrap:wrap}
     .hero h1{
       font-size:clamp(1.85rem,7vw,2.65rem);
@@ -732,7 +732,7 @@ const CSS = `
       padding-left:.65rem;
       margin-bottom:1.35rem;
     }
-    .hbtns{margin-bottom:1rem;flex-direction:column;width:100%}
+    .hbtns{margin-bottom:1.2rem;flex-direction:column;width:100%}
     .hbtns .btn{width:100%;justify-content:center;min-height:46px}
     .hmask{
       width:min(640px,100vw);
