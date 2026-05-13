@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Menu, X, Phone, Mail, MapPin, ArrowRight, Star, ArrowLeft,
   Shield, Clock, Award, ChevronDown, CheckCircle2, FileText,
@@ -11,9 +11,9 @@ import {
 const G = `@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap');`;
 const HERO_POSTER = "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=1920";
 const HERO_VIDEO_SOURCES = [
+  "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
   "/hero-option-2.mp4",
   "/hero-option2.mp4",
-  "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
 ];
 
 /* ══════════════════════════════════════════════════════
@@ -1124,16 +1124,32 @@ function AdminPanel({ navigate }) {
 /* ══════════════════════════════════════════════════════
    PAGES
 ══════════════════════════════════════════════════════ */
-/** Cycles HERO_VIDEO_SOURCES in order (browser only uses the first playable <source>, so we swap src instead). */
+/** Cycles HERO_VIDEO_SOURCES on each ended. onError only skips ahead with a hard cap so a broken list cannot infinite-loop setState. */
 function HeroLoopVideo() {
   const n = HERO_VIDEO_SOURCES.length;
   const [i, setI] = useState(0);
+  const failStreak = useRef(0);
   const src = HERO_VIDEO_SOURCES[i % n];
-  const goNext = useCallback(() => setI((x) => (x + 1) % n), [n]);
+
+  const goNext = useCallback(() => {
+    failStreak.current = 0;
+    setI((x) => (x + 1) % n);
+  }, [n]);
+
+  const onError = useCallback(() => {
+    if (n <= 1) return;
+    failStreak.current += 1;
+    if (failStreak.current > n) return;
+    setI((x) => (x + 1) % n);
+  }, [n]);
+
+  const onLoadedData = useCallback(() => {
+    failStreak.current = 0;
+  }, []);
 
   return (
     <video
-      key={src}
+      key={i}
       className="hvid"
       src={src}
       autoPlay
@@ -1143,8 +1159,9 @@ function HeroLoopVideo() {
       poster={HERO_POSTER}
       aria-hidden="true"
       loop={n <= 1}
+      onLoadedData={onLoadedData}
       onEnded={() => { if (n > 1) goNext(); }}
-      onError={() => { if (n > 1) goNext(); }}
+      onError={onError}
     />
   );
 }
