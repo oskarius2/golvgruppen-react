@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 const G = `@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap');`;
-const HERO_POSTER = "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=1920";
+const HERO_POSTER = "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&fm=webp&q=70&w=1600";
 const HERO_VIDEO_SOURCES = [
   "/hero-option-2.mp4",
   "/hero-option2.mp4",
@@ -198,7 +198,7 @@ const CSS = `
   button:focus-visible,a:focus-visible{outline:2px solid rgba(59,130,246,.55);outline-offset:2px}
 
   .w{max-width:1200px;margin:0 auto;padding:0 2rem}
-  .sec{padding:5rem 0}
+  .sec{padding:5rem 0;content-visibility:auto;contain-intrinsic-size:1px 920px}
   @media(max-width:640px){.sec{padding:3.5rem 0}.w{padding:0 1.25rem}}
 
   /* ── TICKER ── */
@@ -324,7 +324,8 @@ const CSS = `
     min-height:560px;display:flex;align-items:flex-end;overflow:hidden;
     background:url('${HERO_POSTER}') center center / cover no-repeat #080F24}
   .hvid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 36%;
-    filter:brightness(.62) contrast(.86) saturate(.82);pointer-events:none;transform:translateZ(0);backface-visibility:hidden}
+    filter:brightness(.62) contrast(.86) saturate(.82);pointer-events:none;transform:translateZ(0);
+    backface-visibility:hidden;will-change:opacity,transform}
   .hov{position:absolute;inset:0;
     background:linear-gradient(
       to top,
@@ -1156,7 +1157,7 @@ function AdminPanel({ navigate }) {
             <div className="gal-grid">
               {projects.map(p => (
                 <div key={p.id} className="gal-card">
-                  <div className="gal-img"><img src={p.img} alt={p.title} onError={e=>e.target.src="https://via.placeholder.com/400x300?text=Bild+saknas"}/></div>
+                  <div className="gal-img"><img src={p.img} alt={p.title} loading="lazy" decoding="async" onError={e=>e.target.src="https://via.placeholder.com/400x300?text=Bild+saknas"}/></div>
                   <div className="gal-info">
                     <div className="gal-type">{p.type}</div>
                     <div className="gal-title">{p.title}</div>
@@ -1186,11 +1187,17 @@ function HeroLoopVideo() {
   const ref = useRef(null);
   const [srcIndex, setSrcIndex] = useState(0);
   const [disabled, setDisabled] = useState(false);
+  const [deferredStart, setDeferredStart] = useState(false);
   const attemptsRef = useRef(0);
 
   useEffect(() => {
+    const t = window.setTimeout(() => setDeferredStart(true), 1200);
+    return () => window.clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
     const el = ref.current;
-    if (!el || disabled) return;
+    if (!el || disabled || !deferredStart) return;
     const onVisibilityChange = () => {
       if (document.hidden) {
         el.pause();
@@ -1200,7 +1207,7 @@ function HeroLoopVideo() {
     };
     document.addEventListener("visibilitychange", onVisibilityChange);
     return () => document.removeEventListener("visibilitychange", onVisibilityChange);
-  }, [disabled, srcIndex]);
+  }, [deferredStart, disabled, srcIndex]);
 
   const handleError = useCallback(() => {
     attemptsRef.current += 1;
@@ -1211,7 +1218,9 @@ function HeroLoopVideo() {
     setSrcIndex(attemptsRef.current);
   }, []);
 
-  if (disabled) return null;
+  const c = navigator.connection;
+  const lowBandwidth = Boolean(c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || "")));
+  if (disabled || !deferredStart || lowBandwidth || HERO_VIDEO_SOURCES.length === 0) return null;
 
   return (
     <video
@@ -1220,7 +1229,7 @@ function HeroLoopVideo() {
       autoPlay
       muted
       playsInline
-      preload="metadata"
+      preload="none"
       poster={HERO_POSTER}
       aria-hidden="true"
       loop
@@ -1289,7 +1298,7 @@ function HomePage({ navigate }) {
               ))}
             </div>
             <div className="sv-det">
-              <div className="sv-img"><img src={SERVICES[activeSv].image} alt={SERVICES[activeSv].title}/></div>
+              <div className="sv-img"><img src={SERVICES[activeSv].image} alt={SERVICES[activeSv].title} loading="lazy" decoding="async"/></div>
               <span className="lbl">{SERVICES[activeSv].num} — {SERVICES[activeSv].title}</span>
               <h3 style={{fontFamily:"var(--serif)",fontSize:"1.3rem",color:"var(--black)",marginBottom:".55rem"}}>{SERVICES[activeSv].title}</h3>
               <p style={{fontSize:".88rem",color:"var(--g5)",lineHeight:1.75,marginBottom:".9rem"}}>{SERVICES[activeSv].desc}</p>
@@ -1312,7 +1321,7 @@ function HomePage({ navigate }) {
           <div className="pj-grid">
             {DEFAULT_PROJECTS.slice(0,3).map((p,i)=>(
               <div key={i} className="pj-card">
-                <div className="pj-img"><img src={p.img} alt={p.title}/><span className="pj-tag-badge">{p.tag}</span></div>
+                <div className="pj-img"><img src={p.img} alt={p.title} loading="lazy" decoding="async"/><span className="pj-tag-badge">{p.tag}</span></div>
                 <div className="pj-body"><div className="pj-type">{p.type}</div><div className="pj-title">{p.title}</div><div className="pj-meta">{p.area}</div></div>
               </div>
             ))}
@@ -1345,9 +1354,9 @@ function AboutPage({ navigate }) {
         <div className="w">
           <div className="ab-wrap">
             <div className="ab-imgs">
-              <div className="ab-main"><img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=1000" alt="Golv"/></div>
-              <div className="ab-sm"><img src="https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?auto=format&fit=crop&q=80&w=600" alt="Slipning"/></div>
-              <div className="ab-sm"><img src="https://images.unsplash.com/photo-1600607687940-47a000dfd39c?auto=format&fit=crop&q=80&w=600" alt="Mattläggning"/></div>
+              <div className="ab-main"><img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=1000" alt="Golv" loading="lazy" decoding="async"/></div>
+              <div className="ab-sm"><img src="https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?auto=format&fit=crop&q=80&w=600" alt="Slipning" loading="lazy" decoding="async"/></div>
+              <div className="ab-sm"><img src="https://images.unsplash.com/photo-1600607687940-47a000dfd39c?auto=format&fit=crop&q=80&w=600" alt="Mattläggning" loading="lazy" decoding="async"/></div>
             </div>
             <div>
               <h2 className="h2" style={{marginBottom:".9rem"}}>Om oss</h2>
@@ -1396,7 +1405,7 @@ function TjansterPage({ navigate }) {
               ))}
             </div>
             <div className="sv-det">
-              <div className="sv-img"><img src={SERVICES[active].image} alt={SERVICES[active].title}/></div>
+              <div className="sv-img"><img src={SERVICES[active].image} alt={SERVICES[active].title} loading="lazy" decoding="async"/></div>
               <span className="lbl">{SERVICES[active].num} — {SERVICES[active].title}</span>
               <h3 style={{fontFamily:"var(--serif)",fontSize:"1.3rem",color:"var(--black)",marginBottom:".55rem"}}>{SERVICES[active].title}</h3>
               <p style={{fontSize:".88rem",color:"var(--g5)",lineHeight:1.75,marginBottom:".9rem"}}>{SERVICES[active].desc}</p>
@@ -1441,7 +1450,7 @@ function ProjectsPage({ navigate }) {
           <div className="pj-grid">
             {filtered.map((p,i)=>(
               <div key={p.id||i} className="pj-card">
-                <div className="pj-img"><img src={p.img} alt={p.title} onError={e=>e.target.src="https://via.placeholder.com/400x300?text=Bild+saknas"}/><span className="pj-tag-badge">{p.tag}</span></div>
+                <div className="pj-img"><img src={p.img} alt={p.title} loading="lazy" decoding="async" onError={e=>e.target.src="https://via.placeholder.com/400x300?text=Bild+saknas"}/><span className="pj-tag-badge">{p.tag}</span></div>
                 <div className="pj-body"><div className="pj-type">{p.type}</div><div className="pj-title">{p.title}</div><div className="pj-meta">{p.area}</div></div>
               </div>
             ))}
