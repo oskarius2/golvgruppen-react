@@ -464,6 +464,7 @@ const CSS = `
   .pj-meta{font-size:.75rem;color:var(--g4);margin-top:.18rem}
   @media(max-width:720px){.pj-grid{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:480px){.pj-grid{grid-template-columns:1fr}}
+  @media(max-width:640px){.home-ref-preview{display:none}}
 
   /* ── TESTIMONIALS ── */
   .ts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
@@ -1295,8 +1296,8 @@ function HomePage({ navigate }) {
         </div>
       </section>
 
-      {/* Mini projects */}
-      <section className="sec" style={{background:"var(--g1)"}}>
+      {/* Mini projects — dold på mobil (≤640px); full lista under Projekt */}
+      <section className="sec home-ref-preview" style={{background:"var(--g1)"}}>
         <div className="w">
           <div className="sh">
             <div><span className="lbl">Referensprojekt</span><h2 className="h2">Utvalda projekt</h2></div>
