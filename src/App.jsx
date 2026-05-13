@@ -1124,16 +1124,37 @@ function AdminPanel({ navigate }) {
 /* ══════════════════════════════════════════════════════
    PAGES
 ══════════════════════════════════════════════════════ */
+/** Cycles HERO_VIDEO_SOURCES in order (browser only uses the first playable <source>, so we swap src instead). */
+function HeroLoopVideo() {
+  const n = HERO_VIDEO_SOURCES.length;
+  const [i, setI] = useState(0);
+  const src = HERO_VIDEO_SOURCES[i % n];
+  const goNext = useCallback(() => setI((x) => (x + 1) % n), [n]);
+
+  return (
+    <video
+      key={src}
+      className="hvid"
+      src={src}
+      autoPlay
+      muted
+      playsInline
+      preload="auto"
+      poster={HERO_POSTER}
+      aria-hidden="true"
+      loop={n <= 1}
+      onEnded={() => { if (n > 1) goNext(); }}
+      onError={() => { if (n > 1) goNext(); }}
+    />
+  );
+}
+
 function HomePage({ navigate }) {
   const [activeSv, setActiveSv] = useState(0);
   return (
     <div className="page-enter">
       <section className="hero">
-        <video className="hvid" autoPlay muted loop playsInline preload="auto" poster={HERO_POSTER} aria-hidden="true">
-          {HERO_VIDEO_SOURCES.map((src) => (
-            <source key={src} src={src} type="video/mp4"/>
-          ))}
-        </video>
+        <HeroLoopVideo />
         <div className="hov"/>
         <div className="hmask" aria-hidden="true"/>
         <div className="hcon">
