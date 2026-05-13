@@ -338,7 +338,7 @@ const CSS = `
     width:min(980px,96vw);height:50%;
     background:radial-gradient(ellipse at 50% 100%, rgba(4,7,13,.98) 0%, rgba(4,7,13,.8) 38%, rgba(4,7,13,.32) 68%, rgba(4,7,13,0) 100%);
     filter:blur(8px);z-index:1;pointer-events:none}
-  .hcon{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:0 2rem 7.25rem;width:100%}
+  .hcon{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:0 2rem 2.15rem;width:100%}
   .hbadge{display:inline-flex;align-items:center;gap:.5rem;
     background:rgba(26,86,219,.18);border:1px solid rgba(59,130,246,.28);
     backdrop-filter:blur(8px);color:#93C5FD;padding:.38rem .9rem;border-radius:3px;
@@ -349,7 +349,7 @@ const CSS = `
   .hero h1 em{font-style:italic;color:#93C5FD}
   .hero-sub{font-size:.9rem;color:rgba(255,255,255,.55);max-width:460px;line-height:1.8;
     margin-bottom:2rem;padding-left:.9rem;border-left:2px solid rgba(59,130,246,.35)}
-  .hbtns{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:3rem}
+  .hbtns{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem}
   .hcerts-bar{position:absolute;bottom:0;left:0;right:0;z-index:2;
     background:rgba(4,7,13,.82);backdrop-filter:blur(10px);
     border-top:1px solid rgba(255,255,255,.06)}
