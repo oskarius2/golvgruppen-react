@@ -338,7 +338,8 @@ const CSS = `
     width:min(980px,96vw);height:50%;
     background:radial-gradient(ellipse at 50% 100%, rgba(4,7,13,.98) 0%, rgba(4,7,13,.8) 38%, rgba(4,7,13,.32) 68%, rgba(4,7,13,0) 100%);
     filter:blur(8px);z-index:1;pointer-events:none}
-  .hcon{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:0 2rem 2.15rem;width:100%}
+  .hcon{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:0 2rem .4rem;width:100%;
+    transform:translateY(4.8rem)}
   .hbadge{display:inline-flex;align-items:center;gap:.5rem;
     background:rgba(26,86,219,.18);border:1px solid rgba(59,130,246,.28);
     backdrop-filter:blur(8px);color:#93C5FD;padding:.38rem .9rem;border-radius:3px;
@@ -717,7 +718,7 @@ const CSS = `
       padding:1.25rem 0 5.25rem;
       align-items:flex-start;
     }
-    .hcon{padding:0 1.15rem}
+    .hcon{padding:0 1.15rem;transform:none}
     .hbadge{font-size:.58rem;padding:.32rem .72rem;margin-bottom:1rem;letter-spacing:.12em;max-width:100%;flex-wrap:wrap}
     .hero h1{
       font-size:clamp(1.85rem,7vw,2.65rem);
