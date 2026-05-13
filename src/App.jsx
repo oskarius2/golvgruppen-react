@@ -1124,34 +1124,49 @@ function AdminPanel({ navigate }) {
 /* ══════════════════════════════════════════════════════
    PAGES
 ══════════════════════════════════════════════════════ */
-/** Cycles HERO_VIDEO_SOURCES on each ended. onError only skips ahead with a hard cap so a broken list cannot infinite-loop setState. */
+/**
+ * First clip: native <source> list (browser picks first playable URL, no React state).
+ * Further clips: on "ended", advance with DOM src/load/play only — avoids setState loops from onError.
+ */
 function HeroLoopVideo() {
+  const ref = useRef(null);
   const n = HERO_VIDEO_SOURCES.length;
-  const [i, setI] = useState(0);
-  const failStreak = useRef(0);
-  const src = HERO_VIDEO_SOURCES[i % n];
 
-  const goNext = useCallback(() => {
-    failStreak.current = 0;
-    setI((x) => (x + 1) % n);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || n <= 1) return;
+    const list = HERO_VIDEO_SOURCES;
+
+    const currentIndex = () => {
+      const cur = el.currentSrc || el.src || "";
+      for (let k = 0; k < list.length; k++) {
+        const u = list[k];
+        if (!u) continue;
+        if (cur === u) return k;
+        if (u.startsWith("/") && (cur.endsWith(u) || cur.includes(u))) return k;
+        try {
+          if (u.startsWith("http") && cur && new URL(u).pathname && cur.includes(new URL(u).pathname))
+            return k;
+        } catch { /* ignore */ }
+      }
+      return 0;
+    };
+
+    const playNext = () => {
+      const next = (currentIndex() + 1) % list.length;
+      el.src = list[next];
+      el.load();
+      void el.play().catch(() => {});
+    };
+
+    el.addEventListener("ended", playNext);
+    return () => el.removeEventListener("ended", playNext);
   }, [n]);
-
-  const onError = useCallback(() => {
-    if (n <= 1) return;
-    failStreak.current += 1;
-    if (failStreak.current > n) return;
-    setI((x) => (x + 1) % n);
-  }, [n]);
-
-  const onLoadedData = useCallback(() => {
-    failStreak.current = 0;
-  }, []);
 
   return (
     <video
-      key={i}
+      ref={ref}
       className="hvid"
-      src={src}
       autoPlay
       muted
       playsInline
@@ -1159,10 +1174,11 @@ function HeroLoopVideo() {
       poster={HERO_POSTER}
       aria-hidden="true"
       loop={n <= 1}
-      onLoadedData={onLoadedData}
-      onEnded={() => { if (n > 1) goNext(); }}
-      onError={onError}
-    />
+    >
+      {HERO_VIDEO_SOURCES.map((s) => (
+        <source key={s} src={s} type="video/mp4" />
+      ))}
+    </video>
   );
 }
 
