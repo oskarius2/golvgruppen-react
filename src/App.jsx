@@ -745,6 +745,7 @@ const CSS = `
     .adm-tabs{flex-wrap:wrap;width:100%;max-width:100%}
     .adm-tab{flex:1;justify-content:center;min-height:44px;padding:.5rem .75rem}
     .team-list{grid-template-columns:1fr;gap:1.25rem}
+  }
 
   @media(max-width:400px){
     .sgrid{grid-template-columns:repeat(2,1fr);border-left:none}
