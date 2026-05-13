@@ -297,7 +297,7 @@ const CSS = `
     min-height:560px;display:flex;align-items:center;overflow:hidden;
     background:url('${HERO_POSTER}') center center / cover no-repeat #080F24}
   .hvid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 36%;
-    filter:brightness(.62) contrast(.86) saturate(.82)}
+    filter:brightness(.62) contrast(.86) saturate(.82);pointer-events:none;transform:translateZ(0);backface-visibility:hidden}
   .hov{position:absolute;inset:0;
     background:linear-gradient(
       to top,
@@ -756,6 +756,7 @@ const CSS = `
   @media(prefers-reduced-motion:reduce){
     .ticker-track{animation:none}
     .page-enter{animation:none}
+    .hvid{display:none}
   }
 `;
 
@@ -1143,43 +1144,41 @@ function AdminPanel({ navigate }) {
    PAGES
 ══════════════════════════════════════════════════════ */
 /**
- * First clip: native <source> list (browser picks first playable URL, no React state).
- * Further clips: on "ended", advance with DOM src/load/play only — avoids setState loops from onError.
+ * Keep hero playback lightweight and smooth:
+ * - loop one active source for seamless playback
+ * - fallback to next source only on hard media error
+ * - pause when tab is hidden to reduce background CPU usage
  */
 function HeroLoopVideo() {
   const ref = useRef(null);
-  const n = HERO_VIDEO_SOURCES.length;
+  const [srcIndex, setSrcIndex] = useState(0);
+  const [disabled, setDisabled] = useState(false);
+  const attemptsRef = useRef(0);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || n <= 1) return;
-    const list = HERO_VIDEO_SOURCES;
-
-    const currentIndex = () => {
-      const cur = el.currentSrc || el.src || "";
-      for (let k = 0; k < list.length; k++) {
-        const u = list[k];
-        if (!u) continue;
-        if (cur === u) return k;
-        if (u.startsWith("/") && (cur.endsWith(u) || cur.includes(u))) return k;
-        try {
-          if (u.startsWith("http") && cur && new URL(u).pathname && cur.includes(new URL(u).pathname))
-            return k;
-        } catch { /* ignore */ }
+    if (!el || disabled) return;
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        el.pause();
+        return;
       }
-      return 0;
-    };
-
-    const playNext = () => {
-      const next = (currentIndex() + 1) % list.length;
-      el.src = list[next];
-      el.load();
       void el.play().catch(() => {});
     };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, [disabled, srcIndex]);
 
-    el.addEventListener("ended", playNext);
-    return () => el.removeEventListener("ended", playNext);
-  }, [n]);
+  const handleError = useCallback(() => {
+    attemptsRef.current += 1;
+    if (attemptsRef.current >= HERO_VIDEO_SOURCES.length) {
+      setDisabled(true);
+      return;
+    }
+    setSrcIndex(attemptsRef.current);
+  }, []);
+
+  if (disabled) return null;
 
   return (
     <video
@@ -1188,15 +1187,13 @@ function HeroLoopVideo() {
       autoPlay
       muted
       playsInline
-      preload="auto"
+      preload="metadata"
       poster={HERO_POSTER}
       aria-hidden="true"
-      loop={n <= 1}
-    >
-      {HERO_VIDEO_SOURCES.map((s) => (
-        <source key={s} src={s} type="video/mp4" />
-      ))}
-    </video>
+      loop
+      src={HERO_VIDEO_SOURCES[srcIndex]}
+      onError={handleError}
+    />
   );
 }
 
