@@ -375,6 +375,11 @@ const CSS = `
   .sl{font-size:.62rem;font-weight:600;color:rgba(255,255,255,.32);margin-top:.28rem;
     letter-spacing:.1em;text-transform:uppercase}
   .sbar + .sec{padding-top:4.25rem}
+  .home-rest{animation:homeReveal .72s cubic-bezier(.22,1,.36,1) both}
+  @keyframes homeReveal{
+    from{opacity:0;transform:translateY(18px);filter:blur(4px)}
+    to{opacity:1;transform:translateY(0);filter:blur(0)}
+  }
   @media(max-width:720px){.sgrid{grid-template-columns:repeat(3,1fr)}}
   @media(max-width:480px){.sgrid{grid-template-columns:repeat(2,1fr)}}
 
@@ -790,6 +795,7 @@ const CSS = `
     .ticker-track{animation:none}
     .hcerts-track{animation:none}
     .page-enter{animation:none}
+    .home-rest{animation:none}
     .hvid{display:none}
   }
 `;
@@ -1183,12 +1189,21 @@ function AdminPanel({ navigate }) {
  * - fallback to next source only on hard media error
  * - pause when tab is hidden to reduce background CPU usage
  */
-function HeroLoopVideo() {
+function HeroLoopVideo({ onLoopReady }) {
   const ref = useRef(null);
   const [srcIndex, setSrcIndex] = useState(0);
   const [disabled, setDisabled] = useState(false);
   const [deferredStart, setDeferredStart] = useState(false);
   const attemptsRef = useRef(0);
+  const readyRef = useRef(false);
+  const c = navigator.connection;
+  const lowBandwidth = Boolean(c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || "")));
+
+  const markReady = useCallback(() => {
+    if (readyRef.current) return;
+    readyRef.current = true;
+    onLoopReady?.();
+  }, [onLoopReady]);
 
   useEffect(() => {
     const t = window.setTimeout(() => setDeferredStart(true), 1200);
@@ -1218,8 +1233,13 @@ function HeroLoopVideo() {
     setSrcIndex(attemptsRef.current);
   }, []);
 
-  const c = navigator.connection;
-  const lowBandwidth = Boolean(c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || "")));
+  useEffect(() => {
+    if (!deferredStart) return;
+    if (disabled || lowBandwidth || HERO_VIDEO_SOURCES.length === 0) {
+      markReady();
+    }
+  }, [deferredStart, disabled, lowBandwidth, markReady]);
+
   if (disabled || !deferredStart || lowBandwidth || HERO_VIDEO_SOURCES.length === 0) return null;
 
   return (
@@ -1235,16 +1255,27 @@ function HeroLoopVideo() {
       loop
       src={HERO_VIDEO_SOURCES[srcIndex]}
       onError={handleError}
+      onLoadedData={markReady}
+      onPlaying={markReady}
     />
   );
 }
 
 function HomePage({ navigate }) {
   const [activeSv, setActiveSv] = useState(0);
+  const [heroReady, setHeroReady] = useState(false);
+  const handleHeroReady = useCallback(() => setHeroReady(true), []);
+
+  useEffect(() => {
+    // Fallback: never block the page forever if media events fail.
+    const t = window.setTimeout(() => setHeroReady(true), 3200);
+    return () => window.clearTimeout(t);
+  }, []);
+
   return (
     <div className="page-enter">
       <section className="hero">
-        <HeroLoopVideo />
+        <HeroLoopVideo onLoopReady={handleHeroReady} />
         <div className="hov"/>
         <div className="hmask" aria-hidden="true"/>
         <div className="hcon">
@@ -1269,73 +1300,77 @@ function HomePage({ navigate }) {
         </div>
       </section>
 
-      <div className="sbar">
-        <div className="w">
-          <div className="sgrid">
-            {[{v:"90+",l:"Års erfarenhet",i:<Clock size={16}/>},{v:"600+",l:"Slutförda projekt",i:<CheckCircle2 size={16}/>},{v:"8",l:"Aktiva certifikat",i:<BadgeCheck size={16}/>},{v:"GVK",l:"Auktoriserat",i:<Shield size={16}/>},{v:"4.9★",l:"Snittbetyg",i:<Star size={16}/>}].map((s,i)=>(
-              <div key={i} className="stat"><div className="sic">{s.i}</div><div className="sv">{s.v}</div><div className="sl">{s.l}</div></div>
-            ))}
+      {heroReady ? (
+        <div className="home-rest">
+          <div className="sbar">
+            <div className="w">
+              <div className="sgrid">
+                {[{v:"90+",l:"Års erfarenhet",i:<Clock size={16}/>},{v:"600+",l:"Slutförda projekt",i:<CheckCircle2 size={16}/>},{v:"8",l:"Aktiva certifikat",i:<BadgeCheck size={16}/>},{v:"GVK",l:"Auktoriserat",i:<Shield size={16}/>},{v:"4.9★",l:"Snittbetyg",i:<Star size={16}/>}].map((s,i)=>(
+                  <div key={i} className="stat"><div className="sic">{s.i}</div><div className="sv">{s.v}</div><div className="sl">{s.l}</div></div>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Services */}
-      <section className="sec">
-        <div className="w">
-          <span className="lbl">Tjänster</span>
-          <h2 className="h2" style={{marginBottom:".65rem"}}>Allt ditt golv behöver</h2>
-          <p className="lead" style={{marginBottom:"2.5rem"}}>Komplett utbud för privatpersoner, bostadsrättsföreningar, kommuner och offentliga aktörer — med full dokumentation och regelefterlevnad.</p>
-          <div className="sv-wrap">
-            <div className="sv-list">
-              {SERVICES.map((s,i)=>(
-                <div key={i} className={`sv-item ${activeSv===i?"act":""}`} onClick={()=>setActiveSv(i)}>
-                  <div className="sv-ih">
-                    <div className="sv-ic">{s.icon}</div>
-                    <div><div className="sv-it">{s.title}</div><div className="sv-is">{s.short}</div></div>
-                    <ChevronRight size={14} style={{marginLeft:"auto",color:"var(--g3)"}}/>
+          {/* Services */}
+          <section className="sec">
+            <div className="w">
+              <span className="lbl">Tjänster</span>
+              <h2 className="h2" style={{marginBottom:".65rem"}}>Allt ditt golv behöver</h2>
+              <p className="lead" style={{marginBottom:"2.5rem"}}>Komplett utbud för privatpersoner, bostadsrättsföreningar, kommuner och offentliga aktörer — med full dokumentation och regelefterlevnad.</p>
+              <div className="sv-wrap">
+                <div className="sv-list">
+                  {SERVICES.map((s,i)=>(
+                    <div key={i} className={`sv-item ${activeSv===i?"act":""}`} onClick={()=>setActiveSv(i)}>
+                      <div className="sv-ih">
+                        <div className="sv-ic">{s.icon}</div>
+                        <div><div className="sv-it">{s.title}</div><div className="sv-is">{s.short}</div></div>
+                        <ChevronRight size={14} style={{marginLeft:"auto",color:"var(--g3)"}}/>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="sv-det">
+                  <div className="sv-img"><img src={SERVICES[activeSv].image} alt={SERVICES[activeSv].title} loading="lazy" decoding="async"/></div>
+                  <span className="lbl">{SERVICES[activeSv].num} — {SERVICES[activeSv].title}</span>
+                  <h3 style={{fontFamily:"var(--serif)",fontSize:"1.3rem",color:"var(--black)",marginBottom:".55rem"}}>{SERVICES[activeSv].title}</h3>
+                  <p style={{fontSize:".88rem",color:"var(--g5)",lineHeight:1.75,marginBottom:".9rem"}}>{SERVICES[activeSv].desc}</p>
+                  <ul className="sv-bul">{SERVICES[activeSv].bullets.map((b,i)=><li key={i}>{b}</li>)}</ul>
+                  <div style={{marginTop:"1.35rem",display:"flex",gap:".65rem"}}>
+                    <button className="btn bo" style={{fontSize:".78rem"}} onClick={()=>navigate("tjanster")}>Mer info</button>
                   </div>
                 </div>
-              ))}
-            </div>
-            <div className="sv-det">
-              <div className="sv-img"><img src={SERVICES[activeSv].image} alt={SERVICES[activeSv].title} loading="lazy" decoding="async"/></div>
-              <span className="lbl">{SERVICES[activeSv].num} — {SERVICES[activeSv].title}</span>
-              <h3 style={{fontFamily:"var(--serif)",fontSize:"1.3rem",color:"var(--black)",marginBottom:".55rem"}}>{SERVICES[activeSv].title}</h3>
-              <p style={{fontSize:".88rem",color:"var(--g5)",lineHeight:1.75,marginBottom:".9rem"}}>{SERVICES[activeSv].desc}</p>
-              <ul className="sv-bul">{SERVICES[activeSv].bullets.map((b,i)=><li key={i}>{b}</li>)}</ul>
-              <div style={{marginTop:"1.35rem",display:"flex",gap:".65rem"}}>
-                <button className="btn bo" style={{fontSize:".78rem"}} onClick={()=>navigate("tjanster")}>Mer info</button>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
+          </section>
 
-      {/* Mini projects — dold på mobil (≤640px); full lista under Projekt */}
-      <section className="sec home-ref-preview" style={{background:"var(--g1)"}}>
-        <div className="w">
-          <div className="sh">
-            <div><span className="lbl">Referensprojekt</span><h2 className="h2">Utvalda projekt</h2></div>
-            <button className="btn bo" onClick={()=>navigate("projekt")}>Alla projekt <ArrowRight size={14}/></button>
-          </div>
-          <div className="pj-grid">
-            {DEFAULT_PROJECTS.slice(0,3).map((p,i)=>(
-              <div key={i} className="pj-card">
-                <div className="pj-img"><img src={p.img} alt={p.title} loading="lazy" decoding="async"/><span className="pj-tag-badge">{p.tag}</span></div>
-                <div className="pj-body"><div className="pj-type">{p.type}</div><div className="pj-title">{p.title}</div><div className="pj-meta">{p.area}</div></div>
+          {/* Mini projects — dold på mobil (≤640px); full lista under Projekt */}
+          <section className="sec home-ref-preview" style={{background:"var(--g1)"}}>
+            <div className="w">
+              <div className="sh">
+                <div><span className="lbl">Referensprojekt</span><h2 className="h2">Utvalda projekt</h2></div>
+                <button className="btn bo" onClick={()=>navigate("projekt")}>Alla projekt <ArrowRight size={14}/></button>
               </div>
-            ))}
+              <div className="pj-grid">
+                {DEFAULT_PROJECTS.slice(0,3).map((p,i)=>(
+                  <div key={i} className="pj-card">
+                    <div className="pj-img"><img src={p.img} alt={p.title} loading="lazy" decoding="async"/><span className="pj-tag-badge">{p.tag}</span></div>
+                    <div className="pj-body"><div className="pj-type">{p.type}</div><div className="pj-title">{p.title}</div><div className="pj-meta">{p.area}</div></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <div className="ctab">
+            <h2>Redo att samarbeta?</h2>
+            <p>Vi välkomnar uppdrag av alla storlekar — från privata hem till statliga institutioner.</p>
+            <div className="ctab-btns">
+              <button className="btn bw" onClick={()=>navigate("kontakt")}>Kontakta oss <ArrowRight size={15}/></button>
+            </div>
           </div>
         </div>
-      </section>
-
-      <div className="ctab">
-        <h2>Redo att samarbeta?</h2>
-        <p>Vi välkomnar uppdrag av alla storlekar — från privata hem till statliga institutioner.</p>
-        <div className="ctab-btns">
-          <button className="btn bw" onClick={()=>navigate("kontakt")}>Kontakta oss <ArrowRight size={15}/></button>
-        </div>
-      </div>
+      ) : null}
     </div>
   );
 }
