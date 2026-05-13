@@ -11,7 +11,6 @@ import {
 const G = `@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap');`;
 const HERO_POSTER = "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=1920";
 const HERO_VIDEO_SOURCES = [
-  "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
   "/hero-option-2.mp4",
   "/hero-option2.mp4",
 ];
